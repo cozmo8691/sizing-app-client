@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import socketIOClient from "socket.io-client";
 import styled from "styled-components";
+import { v4 as uuid } from "uuid";
 const ENDPOINT = "http://127.0.0.1:5000";
 
 let socket = null;
@@ -44,6 +45,7 @@ const Textarea = styled.textarea`
 const Button = styled.button`
   font-family: "Roboto Slab";
   font-size: 2rem;
+  font-weight: 700;
   width: 14rem;
   height: 3rem;
   background: #ede2d3;
@@ -52,6 +54,106 @@ const Button = styled.button`
   color: white;
   border-radius: 10px;
   padding: 0 0.5rem;
+  cursor: pointer;
+`;
+
+const ViewActionButton = styled(Button)`
+  font-size: 1rem;
+  width: 6rem;
+`;
+
+const Small = styled.p`
+  color: palevioletred;
+  font-size: 0.9rem;
+  padding: 0;
+  margin: 0 0 0 0.3rem;
+  font-weight: 700;
+`;
+const TasksLink = styled.p`
+  color: palevioletred;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  right: 0.3rem;
+  top: 0;
+  cursor: pointer;
+`;
+
+const CloseTasks = styled.p`
+  color: palevioletred;
+  font-size: 2rem;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  right: 0.5rem;
+  top: 0;
+  cursor: pointer;
+`;
+
+const ViewActions = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-items: space-around;
+`;
+
+const TaskInfo = styled.div`
+  background: white;
+  width: 16rem;
+  padding: 1.5rem;
+`;
+
+const UserCard = styled.div`
+  background: white;
+  display: flex;
+  font-weight: 700;
+  font-size: 1rem;
+  align-content: center;
+  justify-content: center;
+  margin: 1rem;
+  padding: 1rem;
+  width: 6rem;
+  color: CornflowerBlue;
+`;
+
+const VoteCard = styled.div`
+  background: white;
+  display: flex;
+  font-weight: 700;
+  font-size: 3rem;
+  align-content: center;
+  justify-content: center;
+  margin: 1rem;
+  padding: 1rem;
+  width: 4rem;
+  color: CornflowerBlue;
+`;
+
+const ResultsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-items: space-around;
+`;
+
+const TaskListItem = styled.div`
+  color: palevioletred;
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 1rem;
+  cursor: pointer;
+`;
+
+const TaskTitle = styled.p`
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+  font-size: 1rem;
+`;
+const TaskDescription = styled.p`
+  margin: 0;
+  padding: 0;
 `;
 
 function App() {
@@ -65,7 +167,17 @@ function App() {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [currentTask, setCurrentTask] = useState(null);
-  const [allTasks, setAllTasks] = useState([]);
+  const allTasks = useRef([]);
+  const [sizeView, setSizeView] = useState("users");
+  const [showTaskList, setShowTaskList] = useState(false);
+
+  // enter room name - creates room with that name - returns roomId
+  // checks room collection keys for match
+  // if not found - creates the room
+
+  // enter roomId
+  // checks for key match
+  // found - join that room
 
   useEffect(() => {
     socket = socketIOClient(ENDPOINT);
@@ -85,10 +197,17 @@ function App() {
     });
 
     socket.on("task", function (task) {
-      console.log("new task created:", task);
-      setAllTasks((allTasks) => {
-        return [...allTasks, task];
+      allTasks.current = [...allTasks.current, task];
+
+      setCurrentTask(task);
+    });
+
+    socket.on("currentTask", function (taskId) {
+      setCurrentTask(() => {
+        const currTask = allTasks.current.find((t) => t.taskId === taskId);
+        return currTask;
       });
+      // setCurrentTask(currTask);
     });
 
     socket.on("size", function (incomingSize) {
@@ -96,7 +215,17 @@ function App() {
         return [...allSizes, incomingSize];
       });
     });
-  }, [allSizes]);
+
+    socket.on("updateTasks", function (incomingTasks) {
+      console.log("updateTasks", incomingTasks);
+      allTasks.current = incomingTasks;
+    });
+
+    socket.on("updateSizes", function (incomingSizes) {
+      console.log("updateSizes", incomingSizes);
+      setAllSizes(incomingSizes);
+    });
+  }, [allSizes, allTasks]);
 
   const connectRoom = useCallback(() => {
     socket.emit("room", { roomName, username });
@@ -108,7 +237,9 @@ function App() {
   }, []);
 
   const createTask = useCallback(() => {
-    socket.emit("task", { roomId, roomName, taskName, taskDescription });
+    const taskId = uuid();
+    const newTask = { taskId, roomId, roomName, taskName, taskDescription };
+    socket.emit("task", newTask);
     setTaskName("");
     setTaskDescription("");
   }, [roomId, roomName, taskName, taskDescription]);
@@ -116,12 +247,31 @@ function App() {
   const submitSize = useCallback(() => {
     socket.emit("size", {
       size,
-      taskId: currentTask,
+      taskId: currentTask.taskId,
       username,
       roomName: currentRoom,
       roomId,
     });
+    setSize("");
   }, [size, username, currentRoom, currentTask, roomId]);
+
+  const handleSetCurrentTask = useCallback(
+    (taskId) => {
+      socket.emit("currentTask", { taskId, roomName: currentRoom });
+    },
+    [currentRoom]
+  );
+
+  const getCurrentTaskSize = useCallback(() => {
+    const sizeRecord = allSizes.find(
+      (s) => s.username === username && s.taskId === currentTask.taskId
+    );
+    return sizeRecord?.size;
+  }, [allSizes, username, currentTask]);
+
+  console.log("allSizes", allSizes);
+  console.log("currentTask:", currentTask);
+  console.log("allTasks:", allTasks.current);
 
   if (!currentRoom) {
     return (
@@ -161,43 +311,122 @@ function App() {
     );
   }
 
+  if (showTaskList) {
+    return (
+      <>
+        <Container>
+          <Title>Task list</Title>
+          <CloseTasks onClick={() => setShowTaskList(false)}>X</CloseTasks>
+          <ul>
+            {allTasks.current.map(({ taskId, taskName }) => (
+              <TaskListItem
+                key={taskId}
+                onClick={() => {
+                  handleSetCurrentTask(taskId);
+                  setShowTaskList(false);
+                }}>
+                {taskName}
+              </TaskListItem>
+            ))}
+          </ul>
+        </Container>
+      </>
+    );
+  }
+
   if (currentTask) {
     return (
       <>
-        <p>
+        <Small>
           {username} is currently in {currentRoom}
-        </p>
-        <Title>Submit size vote</Title>
-        <h3>{currentTask.taskName}</h3>
-        <p>{currentTask.taskDescription}</p>
-        <Container padding="2rem 0">
-          <Container padding="0 0 1rem">
-            <Input
-              type="text"
-              value={size}
-              onChange={(e) => setSize(e.target.value)}
-            />
-          </Container>
-          <Button onClick={submitSize}>Submit size</Button>
+        </Small>
+        <TasksLink>
+          <span onClick={() => setShowTaskList(true)}>Tasks</span>
+        </TasksLink>
+        {!getCurrentTaskSize() ? (
+          <Title>Submit size vote</Title>
+        ) : (
+          <Title>You sized this task as a: {getCurrentTaskSize()}</Title>
+        )}
+        <Container padding="0">
+          <TaskInfo>
+            <TaskTitle>{currentTask.taskName}</TaskTitle>
+            <TaskDescription>{currentTask.taskDescription}</TaskDescription>
+          </TaskInfo>
         </Container>
-        <h3>All sizes for task {currentTask.taskName}:</h3>
-        <ul>
-          {allSizes
-            .filter(({ taskId }) => taskId === currentTask)
-            .map(({ username, size }) => {
-              console.log(size);
-              return <li key={username + size}>{size}</li>;
-            })}
-        </ul>
+        {!getCurrentTaskSize() && (
+          <Container padding="2rem 0">
+            <Container padding="0 0 1rem">
+              <Input
+                type="text"
+                value={size}
+                onChange={(e) => {
+                  setSize(e.target.value);
+                }}
+              />
+            </Container>
+            <Button onClick={submitSize}>Submit size</Button>
+          </Container>
+        )}
+        <Container padding="2rem 0">
+          <ViewActions>
+            <ViewActionButton onClick={() => setSizeView("users")}>
+              Voting
+            </ViewActionButton>
+            <ViewActionButton onClick={() => setSizeView("results")}>
+              Results
+            </ViewActionButton>
+            <ViewActionButton onClick={() => setSizeView("summary")}>
+              Summary
+            </ViewActionButton>
+            <ViewActionButton
+              onClick={() => {
+                setCurrentTask(null);
+                setSizeView("users");
+              }}>
+              Done
+            </ViewActionButton>
+          </ViewActions>
+          {sizeView === "users" && (
+            <>
+              <h3>Users who have sized task {currentTask.taskName}:</h3>
+              <ResultsContainer>
+                {allSizes
+                  .filter(({ taskId }) => taskId === currentTask.taskId)
+                  .map(({ taskId, username }) => {
+                    return (
+                      <UserCard key={taskId + username}>{username}</UserCard>
+                    );
+                  })}
+              </ResultsContainer>
+            </>
+          )}
+          {sizeView === "results" && (
+            <>
+              <h3>All sizes for task {currentTask.taskName}:</h3>
+              <ResultsContainer>
+                {allSizes
+                  .filter(({ taskId }) => taskId === currentTask.taskId)
+                  .map(({ taskId, username, size }) => {
+                    return <VoteCard key={taskId + username}>{size}</VoteCard>;
+                  })}
+              </ResultsContainer>
+            </>
+          )}
+          {sizeView === "summary" && <>calculate avg mean range</>}
+        </Container>
       </>
     );
   }
 
   return (
     <>
-      <p>
+      <Small>
         {username} is currently in {currentRoom}
-      </p>
+      </Small>
+      <TasksLink>
+        <span onClick={() => setShowTaskList(true)}>Tasks</span>
+      </TasksLink>
       <Title>Add Task</Title>
       <Container padding="2rem 0">
         <Container padding="0 0 1rem">
@@ -219,13 +448,6 @@ function App() {
         </Container>
         <Button onClick={createTask}>Save Task</Button>
       </Container>
-      <ul>
-        {allTasks.map(({ taskId, taskName }) => (
-          <li key={taskId} onClick={() => setCurrentTask(taskId)}>
-            {taskName}
-          </li>
-        ))}
-      </ul>
     </>
   );
 }
