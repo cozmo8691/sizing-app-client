@@ -1,10 +1,29 @@
 import styled from "styled-components";
 
+const Button = styled.button`
+  font-family: ${(props) => props.theme.fontFamily};
+  font-size: 1.5rem;
+  font-weight: 700;
+  width: 14rem;
+  height: 3rem;
+  background: #ede2d3;
+  border: 2px solid white;
+  color: white;
+  border-radius: 10px;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  color: ${(props) => props.theme.button.text};
+  background-color: ${(props) => props.theme.button.background};
+`;
+
 const Title = styled.h1`
   font-size: 2.5em;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
-  color: palevioletred;
+  color: ${(props) => props.theme.text};
+  line-height: 2.5rem;
+  margin: 0;
+  padding: 1rem;
 `;
 
 const Container = styled.div`
@@ -15,56 +34,44 @@ const Container = styled.div`
 `;
 
 const Input = styled.input`
-  font-family: "Roboto Slab";
+  font-family: ${(props) => props.theme.fontFamily};
   font-size: 1.5rem;
   width: 20rem;
   height: 3rem;
-  background: #ede2d3;
-  border: 2px solid white;
-  color: palevioletred;
+  background: ${(props) => props.theme.input.background};
+  border: 0;
+  color: ${(props) => props.theme.input.text};
   border-radius: 10px;
+  padding: 0.5rem;
 `;
 
 const Textarea = styled.textarea`
-  font-family: "Roboto Slab";
+  padding: 0.5rem;
+  font-family: ${(props) => props.theme.fontFamily};
   font-size: 1.5rem;
   width: 20rem;
   height: 6rem;
-  background: #ede2d3;
-  border: 2px solid white;
-  color: palevioletred;
+  background: ${(props) => props.theme.input.background};
+  border: 0;
+  color: ${(props) => props.theme.input.text};
   border-radius: 10px;
-`;
-
-const Button = styled.button`
-  font-family: "Roboto Slab";
-  font-size: 2rem;
-  font-weight: 700;
-  width: 14rem;
-  height: 3rem;
-  background: #ede2d3;
-  border: 2px solid white;
-  background: palevioletred;
-  color: white;
-  border-radius: 10px;
-  padding: 0 0.5rem;
-  cursor: pointer;
 `;
 
 const ViewActionButton = styled(Button)`
   font-size: 1rem;
   width: 6rem;
+  margin: 0.25rem;
 `;
 
 const Small = styled.p`
-  color: palevioletred;
+  color: ${(props) => props.theme.text};
   font-size: 0.9rem;
   padding: 0;
   margin: 0 0 0 0.3rem;
   font-weight: 700;
 `;
 const TasksLink = styled.p`
-  color: palevioletred;
+  color: ${(props) => props.theme.text};
   font-size: 0.9rem;
   font-weight: 700;
   padding: 0;
@@ -76,7 +83,7 @@ const TasksLink = styled.p`
 `;
 
 const CloseTasks = styled.p`
-  color: palevioletred;
+  color: ${(props) => props.theme.text};
   font-size: 2rem;
   padding: 0;
   margin: 0;
@@ -93,9 +100,13 @@ const ViewActions = styled.div`
 `;
 
 const TaskInfo = styled.div`
-  background: white;
+  // background-color: ${(props) => props.theme.secondaryBackground};
   width: 16rem;
-  padding: 1.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: ${(props) => props.theme.text};
 `;
 
 const UserCard = styled.div`
@@ -108,7 +119,7 @@ const UserCard = styled.div`
   margin: 1rem;
   padding: 1rem;
   width: 6rem;
-  color: CornflowerBlue;
+  color: ${(props) => props.theme.text};
 `;
 
 const VoteCard = styled.div`
@@ -121,7 +132,7 @@ const VoteCard = styled.div`
   margin: 1rem;
   padding: 1rem;
   width: 4rem;
-  color: CornflowerBlue;
+  color: ${(props) => props.theme.text};
 `;
 
 const ResultsContainer = styled.div`
@@ -132,11 +143,12 @@ const ResultsContainer = styled.div`
 `;
 
 const TaskListItem = styled.div`
-  color: palevioletred;
+  color: ${(props) => props.theme.text};
   font-weight: 700;
   font-size: 2rem;
   margin: 1rem;
   cursor: pointer;
+  text-align: center;
 `;
 
 const TaskTitle = styled.p`

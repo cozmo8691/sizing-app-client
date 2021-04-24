@@ -6,26 +6,6 @@ import InputForm from "./components/InputForm";
 import TaskList from "./components/TaskList";
 import TaskMain from "./components/TaskMain";
 
-import {
-  Title,
-  Container,
-  Input,
-  Textarea,
-  Button,
-  ViewActionButton,
-  Small,
-  TasksLink,
-  CloseTasks,
-  ViewActions,
-  TaskDescription,
-  TaskTitle,
-  TaskListItem,
-  ResultsContainer,
-  UserCard,
-  VoteCard,
-  TaskInfo,
-} from "./components/Styled";
-
 const ENDPOINT = "http://127.0.0.1:5000";
 
 let socket = null;
@@ -180,55 +160,24 @@ function App() {
     );
   }
 
-  if (currentTask) {
-    return (
-      <TaskMain
-        username={username}
-        currentRoom={currentRoom}
-        toggleTaskList={() => setShowTaskList(true)}
-        getCurrentTaskSize={getCurrentTaskSize}
-        currentTask={currentTask}
-        size={size}
-        setSize={setSize}
-        submitSize={submitSize}
-        setSizeView={setSizeView}
-        setCurrentTask={setCurrentTask}
-        sizeView={sizeView}
-        allSizes={allSizes}
-      />
-    );
-  }
-
   return (
-    <>
-      <Small>
-        {username} is currently in {currentRoom}
-      </Small>
-      <TasksLink>
-        <span onClick={() => setShowTaskList(true)}>Tasks</span>
-      </TasksLink>
-      <Title>Add Task</Title>
-      <Container padding="2rem 0">
-        <Container padding="0 0 1rem">
-          <Input
-            type="text"
-            placeholder="enter task title..."
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-          />
-        </Container>
-        <Container padding="0 0 1rem">
-          <Textarea
-            value={taskDescription}
-            onChange={(e) => {
-              setTaskDescription(e.target.value);
-            }}
-            placeholder="enter task description..."
-          />
-        </Container>
-        <Button onClick={createTask}>Save Task</Button>
-      </Container>
-    </>
+    <TaskMain
+      username={username}
+      currentRoom={currentRoom}
+      toggleTaskList={() => setShowTaskList(true)}
+      getCurrentTaskSize={getCurrentTaskSize}
+      currentTask={currentTask}
+      size={size}
+      setSize={setSize}
+      submitSize={submitSize}
+      setSizeView={setSizeView}
+      setCurrentTask={setCurrentTask}
+      sizeView={sizeView}
+      allSizes={allSizes}
+      setTaskName={setTaskName}
+      setTaskDescription={setTaskDescription}
+      createTask={createTask}
+    />
   );
 }
 

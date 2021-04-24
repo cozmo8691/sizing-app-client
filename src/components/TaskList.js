@@ -8,7 +8,7 @@ const TaskList = ({ allTasks, handleClick, handleClose }) => {
       <Container>
         <Title>Task list</Title>
         <CloseTasks onClick={handleClose}>X</CloseTasks>
-        <ul>
+        <div>
           {allTasks.current.map(({ taskId, taskName }) => (
             <TaskListItem
               key={taskId}
@@ -19,7 +19,7 @@ const TaskList = ({ allTasks, handleClick, handleClose }) => {
               {taskName}
             </TaskListItem>
           ))}
-        </ul>
+        </div>
       </Container>
     </>
   );

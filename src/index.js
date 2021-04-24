@@ -1,17 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import styled, { ThemeProvider } from "styled-components";
 import reportWebVitals from "./reportWebVitals";
-import styled from "styled-components";
 
-const Wrapper = styled.div``;
+import App from "./App";
+import "./index.css";
+import theme from "./theme";
+
+const Wrapper = styled.div`
+  background-color: ${(props) => props.theme.background};
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+`;
 
 ReactDOM.render(
   <React.StrictMode>
-    <Wrapper>
-      <App />
-    </Wrapper>
+    <ThemeProvider theme={theme}>
+      <Wrapper>
+        <App />
+      </Wrapper>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
