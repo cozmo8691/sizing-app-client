@@ -23,7 +23,7 @@ const Title = styled.h1`
   color: ${(props) => props.theme.text};
   line-height: 2.5rem;
   margin: 0;
-  padding: 1rem;
+  padding: 2rem 0 0 0;
 `;
 
 const Container = styled.div`
@@ -43,6 +43,7 @@ const Input = styled.input`
   color: ${(props) => props.theme.input.text};
   border-radius: 10px;
   padding: 0.5rem;
+  margin: 0;
 `;
 
 const Textarea = styled.textarea`

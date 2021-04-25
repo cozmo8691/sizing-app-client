@@ -12,6 +12,8 @@ let socket = null;
 
 function App() {
   const [roomName, setRoomName] = useState("");
+  const [createRoomName, setCreateRoomName] = useState("");
+  const [joinRoomId, setJoinRoomId] = useState("");
   const [roomId, setRoomId] = useState("");
   const [size, setSize] = useState("");
   const [allSizes, setAllSizes] = useState([]);
@@ -25,25 +27,21 @@ function App() {
   const [sizeView, setSizeView] = useState("users");
   const [showTaskList, setShowTaskList] = useState(false);
 
-  // enter room name - creates room with that name - returns roomId
-  // checks room collection keys for match
-  // if not found - creates the room
-
-  // enter roomId
-  // checks for key match
-  // found - join that room
-
   useEffect(() => {
     socket = socketIOClient(ENDPOINT);
 
-    // socket.on("connect", function () {
-    //   socket.emit("room", "test");
-    //   // setIsConnected(true);
-    // });
-
-    socket.on("room", function ({ roomId }) {
-      console.log(roomId);
+    socket.on("createRoomSuccess", function ({ roomId, roomName }) {
+      console.log("roomCreated", roomId, roomName);
       setRoomId(roomId);
+      setRoomName(roomName);
+      setCurrentRoom(roomName);
+    });
+
+    socket.on("joinRoomSuccess", function ({ roomId, roomName }) {
+      console.log("roomJoined", roomId, roomName);
+      setRoomId(roomId);
+      setRoomName(roomName);
+      setCurrentRoom(roomName);
     });
 
     socket.on("message", function (msg) {
@@ -80,10 +78,13 @@ function App() {
     });
   }, [allSizes, allTasks]);
 
-  const connectRoom = useCallback(() => {
-    socket.emit("room", { roomName, username });
-    setCurrentRoom(roomName);
-  }, [roomName, username]);
+  const createRoom = useCallback(() => {
+    socket.emit("createRoom", { roomName: createRoomName, username });
+  }, [createRoomName, username]);
+
+  const joinRoom = useCallback(() => {
+    socket.emit("joinRoom", { roomId: joinRoomId, username });
+  }, [joinRoomId, username]);
 
   const saveUsername = useCallback(() => {
     setUsernameIsSaved(true);
@@ -92,6 +93,7 @@ function App() {
   const createTask = useCallback(() => {
     const taskId = uuid();
     const newTask = { taskId, roomId, roomName, taskName, taskDescription };
+    console.log("creating new task", newTask);
     socket.emit("task", newTask);
     setTaskName("");
     setTaskDescription("");
@@ -122,19 +124,28 @@ function App() {
     return sizeRecord?.size;
   }, [allSizes, username, currentTask]);
 
-  console.log("allSizes", allSizes);
-  console.log("currentTask:", currentTask);
-  console.log("allTasks:", allTasks.current);
+  // console.log("allSizes", allSizes);
+  // console.log("currentTask:", currentTask);
+  // console.log("allTasks:", allTasks.current);
 
   if (!currentRoom) {
     return (
-      <InputForm
-        handleChange={setRoomName}
-        handleClick={connectRoom}
-        value={roomName}
-        title="Join or Create a Meeting Room"
-        label="Join/Create"
-      />
+      <>
+        <InputForm
+          handleChange={setCreateRoomName}
+          handleClick={createRoom}
+          value={createRoomName}
+          title="Create a Meeting Room"
+          label="Create"
+        />
+        <InputForm
+          handleChange={setJoinRoomId}
+          handleClick={joinRoom}
+          value={joinRoomId}
+          title="Join a Meeting Room"
+          label="Join"
+        />
+      </>
     );
   }
 

@@ -50,6 +50,23 @@ const orangeGreyTheme = {
   },
 };
 
-const theme = greenGreyTheme;
+const lightGreen = "#86c232";
+
+const lightGreenGreyTheme = {
+  background: "#222629",
+  secondaryBackground: "#4e4e50",
+  text: lightGreen,
+  fontFamily,
+  button: {
+    background: lightGreen,
+    text: "white",
+  },
+  input: {
+    background: "#4e4e50",
+    text: "white",
+  },
+};
+
+const theme = lightGreenGreyTheme;
 
 export default theme;
