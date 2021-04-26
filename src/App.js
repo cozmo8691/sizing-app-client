@@ -2,11 +2,20 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import socketIOClient from "socket.io-client";
 import { v4 as uuid } from "uuid";
 
-import InputForm from "./components/InputForm";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+
+import RoomForm from "./components/RoomForm";
+import UserForm from "./components/UserForm";
 import TaskList from "./components/TaskList";
 import TaskMain from "./components/TaskMain";
 
-const ENDPOINT = "http://127.0.0.1:5000";
+// const ENDPOINT = "http://127.0.0.1:5000";
+const ENDPOINT = "https://sheltered-ocean-67589.herokuapp.com/";
 
 let socket = null;
 
@@ -124,71 +133,65 @@ function App() {
     return sizeRecord?.size;
   }, [allSizes, username, currentTask]);
 
-  // console.log("allSizes", allSizes);
-  // console.log("currentTask:", currentTask);
-  // console.log("allTasks:", allTasks.current);
+  let path = "/sizing";
 
   if (!currentRoom) {
-    return (
-      <>
-        <InputForm
-          handleChange={setCreateRoomName}
-          handleClick={createRoom}
-          value={createRoomName}
-          title="Create a Meeting Room"
-          label="Create"
-        />
-        <InputForm
-          handleChange={setJoinRoomId}
-          handleClick={joinRoom}
-          value={joinRoomId}
-          title="Join a Meeting Room"
-          label="Join"
-        />
-      </>
-    );
-  }
-
-  if (!usernameIsSaved) {
-    return (
-      <InputForm
-        handleChange={setUsername}
-        handleClick={saveUsername}
-        value={username}
-        title="Create a username"
-        label="Save"
-      />
-    );
-  }
-
-  if (showTaskList) {
-    return (
-      <TaskList
-        allTasks={allTasks}
-        handleClick={handleSetCurrentTask}
-        handleClose={() => setShowTaskList(false)}
-      />
-    );
+    path = "/";
+  } else if (!usernameIsSaved) {
+    path = "/register";
+  } else if (showTaskList) {
+    path = "tasks";
   }
 
   return (
-    <TaskMain
-      username={username}
-      currentRoom={currentRoom}
-      toggleTaskList={() => setShowTaskList(true)}
-      getCurrentTaskSize={getCurrentTaskSize}
-      currentTask={currentTask}
-      size={size}
-      setSize={setSize}
-      submitSize={submitSize}
-      setSizeView={setSizeView}
-      setCurrentTask={setCurrentTask}
-      sizeView={sizeView}
-      allSizes={allSizes}
-      setTaskName={setTaskName}
-      setTaskDescription={setTaskDescription}
-      createTask={createTask}
-    />
+    <Router>
+      <Redirect to={path} />
+      <Switch>
+        <Route exact path="/">
+          <RoomForm
+            setCreateRoomName={setCreateRoomName}
+            createRoom={createRoom}
+            createRoomName={createRoomName}
+            setJoinRoomId={setJoinRoomId}
+            joinRoom={joinRoom}
+            joinRoomId={joinRoomId}
+          />
+        </Route>
+        <Route path="/register">
+          <UserForm
+            setUsername={setUsername}
+            saveUsername={saveUsername}
+            username={username}
+          />
+        </Route>
+        <Route path="/tasks">
+          <TaskList
+            allTasks={allTasks}
+            handleClick={handleSetCurrentTask}
+            handleClose={() => setShowTaskList(false)}
+          />
+        </Route>
+        <Route path="/sizing">
+          <TaskMain
+            username={username}
+            currentRoom={currentRoom}
+            toggleTaskList={() => setShowTaskList(true)}
+            getCurrentTaskSize={getCurrentTaskSize}
+            currentTask={currentTask}
+            size={size}
+            setSize={setSize}
+            submitSize={submitSize}
+            setSizeView={setSizeView}
+            setCurrentTask={setCurrentTask}
+            sizeView={sizeView}
+            allSizes={allSizes}
+            setTaskName={setTaskName}
+            setTaskDescription={setTaskDescription}
+            createTask={createTask}
+          />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

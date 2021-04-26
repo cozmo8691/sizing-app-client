@@ -7,8 +7,7 @@ const Button = styled.button`
   width: 14rem;
   height: 3rem;
   background: #ede2d3;
-  border: 2px solid white;
-  color: white;
+  border: none;
   border-radius: 10px;
   padding: 0 0.5rem;
   cursor: pointer;
@@ -24,6 +23,12 @@ const Title = styled.h1`
   line-height: 2.5rem;
   margin: 0;
   padding: 2rem 0 0 0;
+`;
+
+const SubHeading = styled(Title)`
+  font-size: 1.5em;
+  line-height: 1.5rem;
+  margin-top: 2rem;
 `;
 
 const Container = styled.div`
@@ -65,14 +70,14 @@ const ViewActionButton = styled(Button)`
 `;
 
 const Small = styled.p`
-  color: ${(props) => props.theme.text};
+  color: ${(props) => props.theme.secondaryBackground};
   font-size: 0.9rem;
   padding: 0;
   margin: 0 0 0 0.3rem;
   font-weight: 700;
 `;
 const TasksLink = styled.p`
-  color: ${(props) => props.theme.text};
+  color: ${(props) => props.theme.secondaryBackground};
   font-size: 0.9rem;
   font-weight: 700;
   padding: 0;
@@ -181,4 +186,5 @@ export {
   UserCard,
   VoteCard,
   TaskInfo,
+  SubHeading,
 };

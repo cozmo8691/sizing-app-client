@@ -1,5 +1,6 @@
 const red = "#950740";
-const fontFamily = "Roboto Slab";
+// const fontFamily = "Roboto Slab";
+const fontFamily = "Carter One";
 
 const redGreyTheme = {
   background: "#272727",
@@ -51,22 +52,45 @@ const orangeGreyTheme = {
 };
 
 const lightGreen = "#86c232";
+const darkGrey = "#222629";
+const lightGrey = "#4e4e50";
+
+const primaryColour = lightGreen;
+const backgroundColour = darkGrey;
+const inputBackgroundColour = lightGrey;
 
 const lightGreenGreyTheme = {
-  background: "#222629",
-  secondaryBackground: "#4e4e50",
-  text: lightGreen,
+  background: backgroundColour,
+  secondaryBackground: inputBackgroundColour,
+  text: primaryColour,
   fontFamily,
   button: {
-    background: lightGreen,
-    text: "white",
+    background: primaryColour,
+    text: backgroundColour,
   },
   input: {
-    background: "#4e4e50",
-    text: "white",
+    background: inputBackgroundColour,
+    text: backgroundColour,
   },
 };
 
-const theme = lightGreenGreyTheme;
+const darkOrange = "darkorange";
+
+const darkOrangeGreyTheme = {
+  background: "#222629",
+  secondaryBackground: "#4e4e50",
+  text: darkOrange,
+  fontFamily,
+  button: {
+    background: darkOrange,
+    text: "#222629",
+  },
+  input: {
+    background: "#4e4e50",
+    text: "#222629",
+  },
+};
+
+const theme = darkOrangeGreyTheme;
 
 export default theme;

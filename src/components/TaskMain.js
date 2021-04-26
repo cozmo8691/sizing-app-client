@@ -80,9 +80,6 @@ const TaskMain = ({
               <ViewActionButton onClick={() => setSizeView("results")}>
                 Results
               </ViewActionButton>
-              <ViewActionButton onClick={() => setSizeView("summary")}>
-                Summary
-              </ViewActionButton>
               <ViewActionButton
                 onClick={() => {
                   setCurrentTask(null);
@@ -93,7 +90,6 @@ const TaskMain = ({
             </ViewActions>
             {sizeView === "users" && (
               <>
-                <h3>Users who have sized {taskName}:</h3>
                 <ResultsContainer>
                   {allSizes
                     .filter((t) => t.taskId === taskId)
@@ -109,7 +105,6 @@ const TaskMain = ({
             )}
             {sizeView === "results" && (
               <>
-                <h3>All sizes for task {taskName}:</h3>
                 <ResultsContainer>
                   {allSizes
                     .filter((t) => t.taskId === taskId)
@@ -123,7 +118,6 @@ const TaskMain = ({
                 </ResultsContainer>
               </>
             )}
-            {sizeView === "summary" && <>calculate avg mean range</>}
           </Container>
         </>
       )}
